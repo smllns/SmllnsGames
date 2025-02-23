@@ -62,25 +62,25 @@ export function useSnakeGame(gridSize: number, isGameStarted: boolean) {
     setFood({ x: randomX, y: randomY });
   }, [gridSize, snake, food]);
 
-  // Function to initialize the game state
-  const initializeGame = () => {
-    setSnake(initialSnake);
+  // // Function to initialize the game state
+  const initializeGame = useCallback(() => {
+    setSnake(initialSnake); // assuming initialSnake is defined elsewhere
     setFood({ x: Math.floor(gridSize / 4), y: Math.floor(gridSize / 4) });
     setDirection('RIGHT');
     setScore(0);
     setIsGameOver(false);
-  };
+  }, [gridSize]);
+
+  // // Initialize the game when it starts
+  useEffect(() => {
+    if (!isGameStarted) return;
+    initializeGame();
+  }, [gridSize, isGameStarted, initializeGame]);
 
   // Function to reset the score to 0
   const zeroScore = () => {
     setScore(0);
   };
-
-  // Initialize the game when it starts
-  useEffect(() => {
-    if (!isGameStarted) return;
-    initializeGame();
-  }, [gridSize, isGameStarted, initializeGame]);
 
   // Function to reset the game state
   const resetGame = () => {
