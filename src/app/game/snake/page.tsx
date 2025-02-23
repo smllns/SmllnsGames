@@ -81,7 +81,7 @@ const Snake = () => {
 
       {/* Background floating food emojis with animations */}
       <FloatingEmojis emojis={emojis} />
-    
+
       {/* Dark overlay for aesthetics */}
       <div className='absolute inset-0 bg-black/50 z-0' />
 

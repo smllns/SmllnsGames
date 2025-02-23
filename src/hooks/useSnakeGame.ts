@@ -26,7 +26,7 @@ export function useSnakeGame(gridSize: number, isGameStarted: boolean) {
   );
   const [isGameOver, setIsGameOver] = useState(false);
   const [score, setScore] = useState(0);
-  
+
   // Get high score from local storage and update function
   const { highScore, updateHighScore } = useSnakeLocalHighScore();
 
@@ -47,8 +47,8 @@ export function useSnakeGame(gridSize: number, isGameStarted: boolean) {
   // Function to generate a new food position that is not overlapping with the snake
   const generateFood = useCallback(() => {
     let randomX: number, randomY: number;
-    let prevFoodX = food.x;
-    let prevFoodY = food.y;
+    const prevFoodX = food.x;
+    const prevFoodY = food.y;
 
     // Keep generating random positions until it doesn't overlap with the snake or the previous food position
     do {
