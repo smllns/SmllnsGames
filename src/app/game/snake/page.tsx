@@ -1,7 +1,7 @@
 'use client';
 import GameStatus from '@/components/snake/GameStatus';
 import { Button } from '@/components/ui/button';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSnakeGame } from '@/hooks/useSnakeGame';
 import { useSnakeWindowSize } from '@/hooks/useSnakeWindowSize';
 import { useSnakeEmojis } from '@/hooks/useSnakeEmojis';
@@ -32,10 +32,15 @@ const Snake = () => {
     zeroScore,
   } = useSnakeGame(gridSize, isGameStarted);
 
-  // Detects screen size
-  const [isWideScreen, setIsWideScreen] = useState(
-    window.innerWidth > window.innerHeight
-  );
+  // Detects screen size (only on client-side)
+  const [isWideScreen, setIsWideScreen] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setIsWideScreen(window.innerWidth > window.innerHeight);
+    }
+  }, []); // Only runs on client-side after component is mounted
+
   useSnakeWindowSize({ setIsWideScreen }); // Updates screen size state
 
   // Emoji animations for food items

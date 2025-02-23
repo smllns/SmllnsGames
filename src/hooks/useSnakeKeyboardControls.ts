@@ -13,6 +13,8 @@ export function useSnakeKeyboardControls(
   const keyPressDelay = 200;
 
   useEffect(() => {
+    if (typeof window === 'undefined') return; // Ensure we are on the client-side
+
     // Event handler for key presses
     const handleKeyPress = (e: KeyboardEvent) => {
       // Prevent page scrolling when arrow keys are pressed
