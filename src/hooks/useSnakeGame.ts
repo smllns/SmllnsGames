@@ -80,7 +80,7 @@ export function useSnakeGame(gridSize: number, isGameStarted: boolean) {
   useEffect(() => {
     if (!isGameStarted) return;
     initializeGame();
-  }, [gridSize, isGameStarted]);
+  }, [gridSize, isGameStarted, initializeGame]);
 
   // Function to reset the game state
   const resetGame = () => {
@@ -185,6 +185,8 @@ export function useSnakeGame(gridSize: number, isGameStarted: boolean) {
     isGameStarted,
     generateFood,
     highScore,
+    score,
+    updateHighScore,
   ]);
 
   // Custom hook for controlling snake's direction using keyboard

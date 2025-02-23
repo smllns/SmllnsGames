@@ -1,7 +1,7 @@
 'use client';
 import GameStatus from '@/components/snake/GameStatus';
 import { Button } from '@/components/ui/button';
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { useSnakeGame } from '@/hooks/useSnakeGame';
 import { useSnakeWindowSize } from '@/hooks/useSnakeWindowSize';
 import { useSnakeEmojis } from '@/hooks/useSnakeEmojis';
