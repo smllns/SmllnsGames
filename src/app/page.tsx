@@ -17,18 +17,15 @@ export default function Home() {
         <h1 className='text-4xl font-bold mb-8 z-40'>
           Enjoy my <ColourfulText text='games' />
         </h1>
-        <div className='grid grid-cols-2 gap-4 sm:gap-6 md:gap-10 w-full aspect-square'>
-          {games.map((game) => (
-            <div
-              key={game.slug}
-              className={`relative flex items-center justify-center w-full aspect-square rounded-xl border-neutral-600 border-4 p-4 md:rounded-3xl md:p-6 ${
-                game.isReady
-                  ? 'bg-neutral-800/10 hover:bg-neutral-500/20 transition-all duration-500'
-                  : 'bg-neutral-700 cursor-not-allowed opacity-50'
-              }`}
-            >
-              {game.isReady ? (
-                <Link href={`/game/${game.slug}`}>
+        <div className='grid grid-cols-2 gap-4 sm:gap-6 md:gap-10 w-full aspect-square max-h-[70vh]'>
+          {games.map((game) =>
+            game.isReady ? (
+              <Link
+                key={game.slug}
+                href={`/game/${game.slug}`}
+                className='w-full'
+              >
+                <div className='relative flex items-center justify-center w-full aspect-square rounded-xl border-neutral-600 border-4 p-4 md:rounded-3xl md:p-6 bg-neutral-800/10 hover:bg-neutral-500/20 transition-all duration-500'>
                   <GlowingEffect
                     spread={40}
                     glow={true}
@@ -40,14 +37,19 @@ export default function Home() {
                   <p className='text-2xl font-semibold text-center'>
                     {game.name}
                   </p>
-                </Link>
-              ) : (
-                <div className='text-2xl font-semibold text-center'>
-                  {game.name} (Coming Soon)
                 </div>
-              )}
-            </div>
-          ))}
+              </Link>
+            ) : (
+              <div
+                key={game.slug}
+                className='relative flex items-center justify-center w-full aspect-square rounded-xl border-neutral-600 border-4 p-4 md:rounded-3xl md:p-6 bg-neutral-700 cursor-not-allowed opacity-50'
+              >
+                <p className='text-2xl font-semibold text-center'>
+                  {game.name} (Coming Soon)
+                </p>
+              </div>
+            )
+          )}
         </div>
       </main>
     </BackgroundLines>
