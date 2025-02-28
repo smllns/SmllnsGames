@@ -1,12 +1,5 @@
+import { foodOptions, FoodPickerProps } from '@/lib/typesAndConstants';
 import React from 'react';
-
-interface FoodPickerProps {
-  foodEmoji: string;
-  setFoodEmoji: (emoji: string) => void;
-}
-
-// Array of food emojis for the food picker options
-const foodOptions = ['🍏', '🍓', '🍌', '🥑', '🍒', '🥝'];
 
 // FoodPicker component allows users to select a food emoji from a list
 const FoodPicker: React.FC<FoodPickerProps> = ({ setFoodEmoji, foodEmoji }) => {

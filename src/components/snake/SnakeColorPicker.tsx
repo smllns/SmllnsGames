@@ -1,18 +1,8 @@
 import React from 'react';
-
-interface SnakeColorPickerProps {
-  snakeColor: string;
-  setSnakeColor: (color: string) => void;
-}
-
-const snakeColorOptions = [
-  '#4B5D67',
-  '#3A4B42',
-  '#C18D8C',
-  '#C2A269',
-  '#B79B93',
-  '#8C6D9B',
-];
+import {
+  snakeColorOptions,
+  SnakeColorPickerProps,
+} from '@/lib/typesAndConstants';
 
 const SnakeColorPicker: React.FC<SnakeColorPickerProps> = ({
   snakeColor,

@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 const games = [
   { name: 'Snake', slug: 'snake', isReady: true },
-  { name: '2048', slug: '2048', isReady: false },
+  { name: '2048', slug: '2048', isReady: true },
   { name: 'Tetris', slug: 'tetris', isReady: false },
   { name: 'Block Breaker', slug: 'block-breaker', isReady: false },
 ];

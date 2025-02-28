@@ -1,37 +1,24 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSnakeKeyboardControls } from './useSnakeKeyboardControls';
-import { useSnakeLocalHighScore } from './useSnakeLocalHighScore';
-
-interface Position {
-  x: number;
-  y: number;
-}
+import { useLocalHighScore } from './useLocalHighScore';
+import { Direction, Position } from '@/lib/typesAndConstants';
+import { generateFood, initializeGame, playEatSound } from '@/lib/snakeUtils';
 
 // Custom hook for the snake game logic
-export function useSnakeGame(gridSize: number, isGameStarted: boolean) {
-  // Initial snake position and state setup
-  const initialSnake = [
-    { x: Math.floor(gridSize / 2), y: Math.floor(gridSize / 2) },
-    { x: Math.floor(gridSize / 2) - 1, y: Math.floor(gridSize / 2) },
-    { x: Math.floor(gridSize / 2) - 2, y: Math.floor(gridSize / 2) },
-  ];
+export function useSnakeGame(
+  gridSize: number,
+  isGameStarted: boolean,
+  isMusicEnabled: boolean
+) {
   // State for snake, food, direction, game over flag, and score
-  const [snake, setSnake] = useState<Position[]>(initialSnake);
-  const [food, setFood] = useState<Position>({
-    x: Math.floor(gridSize / 4),
-    y: Math.floor(gridSize / 4),
-  });
-  const [direction, setDirection] = useState<'UP' | 'DOWN' | 'LEFT' | 'RIGHT'>(
-    'RIGHT'
-  );
+  const [snake, setSnake] = useState<Position[]>([]);
+  const [food, setFood] = useState<Position>(initializeGame(gridSize).food);
+  const [direction, setDirection] = useState<Direction>('RIGHT');
   const [isGameOver, setIsGameOver] = useState(false);
   const [score, setScore] = useState(0);
 
   // Get high score from local storage and update function
-  const { highScore, updateHighScore } = useSnakeLocalHighScore();
-
-  // Reference for AudioContext used for playing sounds
-  const audioContextRef = useRef<AudioContext | null>(null);
+  const { highScore, updateHighScore } = useLocalHighScore('snakeHighScore');
 
   // Detect if the device is mobile
   const isMobile = useRef<boolean>(false);
@@ -40,42 +27,9 @@ export function useSnakeGame(gridSize: number, isGameStarted: boolean) {
   }, []);
 
   // Function to change snake's direction
-  const changeDirection = (newDirection: 'UP' | 'DOWN' | 'LEFT' | 'RIGHT') => {
+  const changeDirection = (newDirection: Direction) => {
     setDirection(newDirection);
   };
-
-  // Function to generate a new food position that is not overlapping with the snake
-  const generateFood = useCallback(() => {
-    let randomX: number, randomY: number;
-    const prevFoodX = food.x;
-    const prevFoodY = food.y;
-
-    // Keep generating random positions until it doesn't overlap with the snake or the previous food position
-    do {
-      randomX = Math.floor(Math.random() * gridSize);
-      randomY = Math.floor(Math.random() * gridSize);
-    } while (
-      snake.some((segment) => segment.x === randomX && segment.y === randomY) ||
-      (randomX === prevFoodX && randomY === prevFoodY)
-    );
-
-    setFood({ x: randomX, y: randomY });
-  }, [gridSize, snake, food]);
-
-  // // Function to initialize the game state
-  const initializeGame = useCallback(() => {
-    setSnake(initialSnake); // assuming initialSnake is defined elsewhere
-    setFood({ x: Math.floor(gridSize / 4), y: Math.floor(gridSize / 4) });
-    setDirection('RIGHT');
-    setScore(0);
-    setIsGameOver(false);
-  }, [gridSize]);
-
-  // // Initialize the game when it starts
-  useEffect(() => {
-    if (!isGameStarted) return;
-    initializeGame();
-  }, [gridSize, isGameStarted, initializeGame]);
 
   // Function to reset the score to 0
   const zeroScore = () => {
@@ -84,30 +38,41 @@ export function useSnakeGame(gridSize: number, isGameStarted: boolean) {
 
   // Function to reset the game state
   const resetGame = () => {
-    initializeGame();
+    const {
+      snake: initialSnake,
+      food: initialFood,
+      direction: initialDirection,
+      score: initialScore,
+      isGameOver: initialIsGameOver,
+    } = initializeGame(gridSize);
+    setSnake(initialSnake);
+    setFood(initialFood);
+    setDirection(initialDirection);
+    setScore(initialScore);
+    setIsGameOver(initialIsGameOver);
   };
 
-  // Function to play the sound when the snake eats food
-  const playEatSound = () => {
-    // Skip sound playing if on mobile
-    if (isMobile.current) return;
-
-    if (!audioContextRef.current) {
-      // Initialize AudioContext if it's not already created
-      audioContextRef.current = new AudioContext();
-    }
-
-    const audio = new Audio('/snakeEat.mp3');
-    const source = audioContextRef.current.createMediaElementSource(audio);
-    source.connect(audioContextRef.current.destination);
-    audio.play();
-  };
-
+  // Initialize the game when it starts
   useEffect(() => {
-    // If game is not started or game is over, don't proceed
+    if (!isGameStarted) return;
+    const {
+      snake: initialSnake,
+      food: initialFood,
+      direction: initialDirection,
+      score: initialScore,
+      isGameOver: initialIsGameOver,
+    } = initializeGame(gridSize);
+    setSnake(initialSnake);
+    setFood(initialFood);
+    setDirection(initialDirection);
+    setScore(initialScore);
+    setIsGameOver(initialIsGameOver);
+  }, [gridSize, isGameStarted]);
+
+  // Main game loop for moving the snake
+  useEffect(() => {
     if (!isGameStarted || isGameOver) return;
 
-    // Main game loop for moving the snake
     const moveSnake = () => {
       setSnake((prevSnake) => {
         const newSnake = [...prevSnake];
@@ -139,7 +104,6 @@ export function useSnakeGame(gridSize: number, isGameStarted: boolean) {
             (segment) => segment.x === head.x && segment.y === head.y
           );
 
-        // End game if there's a collision
         if (hasCollision) {
           setIsGameOver(true);
           return prevSnake;
@@ -151,18 +115,15 @@ export function useSnakeGame(gridSize: number, isGameStarted: boolean) {
 
         // Check if the snake has eaten food
         if (head.x === food.x && head.y === food.y) {
-          generateFood();
+          setFood(generateFood(gridSize, newSnake, food));
           newSnake.push({ x: food.x, y: food.y });
 
           // Play sound if not on mobile
-          playEatSound();
+          playEatSound('/snakeEat.mp3', isMusicEnabled, isMobile.current);
 
           // Update score and check if it's a new high score
           setScore((prevScore) => {
-            let newScore = prevScore + 1;
-            if (newScore - score > 1) {
-              newScore = newScore - 1;
-            }
+            const newScore = prevScore + 1;
             if (newScore > highScore) {
               updateHighScore(newScore);
             }
@@ -174,7 +135,6 @@ export function useSnakeGame(gridSize: number, isGameStarted: boolean) {
       });
     };
 
-    // Start the game interval for moving the snake
     const gameInterval = setInterval(moveSnake, 200);
     return () => clearInterval(gameInterval);
   }, [
@@ -183,9 +143,8 @@ export function useSnakeGame(gridSize: number, isGameStarted: boolean) {
     isGameOver,
     gridSize,
     isGameStarted,
-    generateFood,
+    isMusicEnabled,
     highScore,
-    score,
     updateHighScore,
   ]);
 
@@ -196,6 +155,7 @@ export function useSnakeGame(gridSize: number, isGameStarted: boolean) {
     snake,
     food,
     isGameOver,
+    setIsGameOver,
     score,
     highScore,
     changeDirection,

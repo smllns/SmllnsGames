@@ -1,8 +1,9 @@
+import { Direction } from '@/lib/typesAndConstants';
 import { useSwipeable } from 'react-swipeable';
 
-// Custom hook to handle swipe gestures for the snake game direction on mobile
-export function useSnakeSwipe(
-  changeDirection: (newDirection: 'UP' | 'DOWN' | 'LEFT' | 'RIGHT') => void,
+// Custom hook to handle swipe gestures for games directions on mobile
+export function useSwipe(
+  changeDirection: (newDirection: Direction) => void,
   isGameStarted: boolean
 ) {
   return useSwipeable({

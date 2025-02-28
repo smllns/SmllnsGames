@@ -1,10 +1,7 @@
+import { UseSnakeWindowSizeProps } from '@/lib/typesAndConstants';
 import { useEffect } from 'react';
 
 // Custom hook to handle window resize and determine if the screen is wide
-interface UseSnakeWindowSizeProps {
-  setIsWideScreen: (isWide: boolean) => void;
-}
-
 export function useSnakeWindowSize({
   setIsWideScreen,
 }: UseSnakeWindowSizeProps) {

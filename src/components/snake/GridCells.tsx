@@ -1,11 +1,4 @@
-interface GridCellsProps {
-  gridSize: number;
-  snake: { x: number; y: number }[];
-  food: { x: number; y: number };
-  gridBorderColor: string;
-  snakeColor: string;
-  foodEmoji: string;
-}
+import { GridCellsProps } from '@/lib/typesAndConstants';
 
 // GridCells component responsible for rendering each cell of the grid
 const GridCells: React.FC<GridCellsProps> = ({
@@ -91,7 +84,7 @@ const GridCells: React.FC<GridCellsProps> = ({
                   position: 'absolute',
                   top: '50%',
                   left: '50%',
-                  transform: 'translate(-50%, -50%)', // Center the food emoji within the grid cell
+                  transform: 'translate(-50%, -50%)',
                 }}
               >
                 {foodEmoji}

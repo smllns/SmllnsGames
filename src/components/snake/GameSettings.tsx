@@ -11,6 +11,8 @@ import GridSizeSelector from './GridSizeSelector';
 import GridColorPicker from './GridColorPicker';
 import SnakeColorPicker from './SnakeColorPicker';
 import FoodPicker from './FoodPicker';
+import { Label } from '../ui/label';
+import { Switch } from '../ui/switch';
 
 interface GameSettingsProps {
   gridSize: number;
@@ -24,6 +26,8 @@ interface GameSettingsProps {
   setFoodEmoji: (emoji: string) => void;
   setIsGameStarted: (param: boolean) => void;
   setShowSettings: (param: boolean) => void;
+  isMusicEnabled: boolean;
+  setIsMusicEnabled: (enabled: boolean) => void;
 }
 
 // GameSettings component provides settings for the Snake game
@@ -39,10 +43,12 @@ const GameSettings: React.FC<GameSettingsProps> = ({
   setFoodEmoji,
   setIsGameStarted,
   setShowSettings,
+  isMusicEnabled,
+  setIsMusicEnabled,
 }) => {
   return (
     <Card className='absolute flex flex-col items-center justify-center zero:p-2 sm:p-6 bg-neutral-800 rounded-xl'>
-      <CardHeader className='text-center'>
+      <CardHeader className='text-center pb-4'>
         <CardTitle className='zero:text-xl sm:text-2xl lg:text-3xl font-bold text-white'>
           🐍 Snake Game 🐍
         </CardTitle>
@@ -52,7 +58,20 @@ const GameSettings: React.FC<GameSettingsProps> = ({
       </CardHeader>
       {/* Card content with various settings options */}
       <CardContent className='flex flex-col items-center'>
+        {/* Game music selection */}
+        <div className='pt-0 flex flex-row gap-4 items-center mb-2'>
+          <Label className='text-white text-xl font-bold ' htmlFor='snakeMusic'>
+            MUSIC
+          </Label>
+          <Switch
+            id='snakeMusic'
+            gridColor={gridColor}
+            isChecked={isMusicEnabled}
+            onCheckedChange={(checked) => setIsMusicEnabled(checked as boolean)}
+          />
+        </div>
         {/* Grid size selection */}
+
         <p className='text-white text-xl font-bold mb-2'>GRID SIZE</p>
         <GridSizeSelector gridSize={gridSize} setGridSize={setGridSize} />
 

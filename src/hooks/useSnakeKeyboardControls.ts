@@ -1,6 +1,5 @@
+import { Direction } from '@/lib/typesAndConstants';
 import { useEffect, useRef } from 'react';
-
-type Direction = 'UP' | 'DOWN' | 'LEFT' | 'RIGHT';
 
 // Custom hook to handle keyboard controls for the snake game
 export function useSnakeKeyboardControls(

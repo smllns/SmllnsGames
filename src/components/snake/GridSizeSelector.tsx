@@ -1,9 +1,5 @@
 import React from 'react';
-
-interface GridSizeSelectorProps {
-  gridSize: number;
-  setGridSize: (size: number) => void;
-}
+import { GridSizeSelectorProps } from '@/lib/typesAndConstants';
 
 const GridSizeSelector: React.FC<GridSizeSelectorProps> = ({
   gridSize,

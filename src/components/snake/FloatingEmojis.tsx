@@ -1,14 +1,5 @@
+import { FloatingEmojisProps } from '@/lib/typesAndConstants';
 import { motion } from 'framer-motion';
-
-interface FloatingEmojisProps {
-  // Define the shape of the emojis data being passed to the component
-  emojis: {
-    emoji: string;
-    position: { x: number; y: number };
-    size: number;
-    rotation: number;
-  }[];
-}
 
 const FloatingEmojis: React.FC<FloatingEmojisProps> = ({ emojis }) => {
   return (

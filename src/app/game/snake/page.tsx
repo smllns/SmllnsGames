@@ -1,14 +1,16 @@
 'use client';
 import GameStatus from '@/components/snake/GameStatus';
-import { Button } from '@/components/ui/button';
 import React, { useState, useEffect } from 'react';
 import { useSnakeGame } from '@/hooks/useSnakeGame';
 import { useSnakeWindowSize } from '@/hooks/useSnakeWindowSize';
 import { useSnakeEmojis } from '@/hooks/useSnakeEmojis';
-import { useSnakeSwipe } from '@/hooks/useSnakeSwipe';
+import { useSwipe } from '@/hooks/useSwipe';
 import GridCells from '@/components/snake/GridCells';
 import GameSettings from '@/components/snake/GameSettings';
 import FloatingEmojis from '@/components/snake/FloatingEmojis';
+import { useAudio } from '@/hooks/useAudio';
+import BackButton from '@/components/BackButton';
+import Overlay from '@/components/ui/overlay';
 
 const Snake = () => {
   // State variables for game settings
@@ -19,18 +21,20 @@ const Snake = () => {
   const [snakeColor, setSnakeColor] = useState('#4B5D67');
   const [foodEmoji, setFoodEmoji] = useState('🍏');
   const [showSettings, setShowSettings] = useState(true);
+  const [isMusicEnabled, setIsMusicEnabled] = useState(false);
+  const [hasUserInteracted, setHasUserInteracted] = useState(false);
 
-  // Game logic hook
   const {
     snake,
     food,
     isGameOver,
+    setIsGameOver,
     score,
     highScore,
     changeDirection,
     resetGame,
     zeroScore,
-  } = useSnakeGame(gridSize, isGameStarted);
+  } = useSnakeGame(gridSize, isGameStarted, isMusicEnabled);
 
   // Detects screen size (only on client-side)
   const [isWideScreen, setIsWideScreen] = useState(false);
@@ -47,10 +51,28 @@ const Snake = () => {
   const emojis = useSnakeEmojis(foodEmoji);
 
   // Handles swipe gestures on mobile
-  const handlers = useSnakeSwipe(changeDirection, isGameStarted);
+  const handlers = useSwipe(changeDirection, isGameStarted);
+
+  // Use useAudio hook for background music management
+  const { play: playBackgroundMusic } = useAudio(
+    { src: '/snakeMusic.mp3', loop: true },
+    isMusicEnabled,
+    hasUserInteracted
+  );
+
+  // Handler for the first user interaction to enable audio playback
+  const handleUserInteraction = () => {
+    if (!hasUserInteracted) {
+      setHasUserInteracted(true);
+      if (isMusicEnabled) {
+        playBackgroundMusic();
+      }
+    }
+  };
 
   // Toggle settings menu and reset the score
   const openSettings = () => {
+    setIsGameOver(false);
     setShowSettings((prev) => !prev);
     setIsGameStarted(false);
     zeroScore();
@@ -60,24 +82,17 @@ const Snake = () => {
     <main
       className='relative flex flex-col items-center justify-center min-h-screen text-white transition-all duration-300'
       style={{ backgroundColor: gridBorderColor, touchAction: 'none' }}
+      onClick={handleUserInteraction}
       {...handlers} // Enables swipe gestures
     >
-      {/* Background music for the game */}
-      <audio autoPlay loop>
-        <source src='/snakeMusic.mp3' type='audio/mp3' />
-        Your browser does not support the audio element.
-      </audio>
-
       {/* Back button to return to the main menu */}
-      <Button
-        className='absolute z-10 left-4 top-4 bg-pink-500 hover:bg-pink-600 font-bold py-2 px-4 text-xl text-white transition-all duration-300'
-        onClick={() => (window.location.href = '/')}
-      >
-        Back
-      </Button>
+      <BackButton handleUserInteraction={handleUserInteraction} />
 
       {/* Display current score and high score */}
-      <div className='absolute top-4 right-4 z-10 text-white bg-neutral-800 p-4 rounded-md font-bold'>
+      <div
+        className='absolute top-4 right-4 z-10 text-white bg-neutral-800 p-4 rounded-md font-bold'
+        onClick={handleUserInteraction}
+      >
         <p>
           {foodEmoji} Score: {score}
         </p>
@@ -88,7 +103,7 @@ const Snake = () => {
       <FloatingEmojis emojis={emojis} />
 
       {/* Dark overlay for aesthetics */}
-      <div className='absolute inset-0 bg-black/50 z-0' />
+      <Overlay />
 
       {/* Game grid container */}
       <div
@@ -101,6 +116,7 @@ const Snake = () => {
           aspectRatio: '1',
           margin: 'auto',
         }}
+        onClick={handleUserInteraction}
       >
         <GridCells
           gridSize={gridSize}
@@ -126,15 +142,18 @@ const Snake = () => {
           setFoodEmoji={setFoodEmoji}
           setIsGameStarted={setIsGameStarted}
           setShowSettings={setShowSettings}
+          isMusicEnabled={isMusicEnabled}
+          setIsMusicEnabled={setIsMusicEnabled}
         />
       )}
 
       {/* Show game over screen if the game is over */}
       {!showSettings && (
         <GameStatus
-          onRestart={resetGame}
           isGameOver={isGameOver}
+          onRestart={resetGame}
           onSettings={openSettings}
+          isMusicEnabled={isMusicEnabled}
         />
       )}
     </main>
