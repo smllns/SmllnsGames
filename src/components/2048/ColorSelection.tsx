@@ -59,21 +59,28 @@ const ColorSelection = <T extends ColorType>({
   }, [whichColor]);
 
   const isSelected = useMemo(() => {
-    //  Determines if a given item is the currently selected value.
+    // Determines if a given item is the currently selected value, using deep comparison for TileColorScheme.
     return (item: ColorValue<T>): boolean => {
+      const activeValue = selectedValue ?? options[0]; // Use first item if selectedValue is undefined
+
       switch (whichColor) {
         case 'EmptyTile':
         case 'GridColor':
-          return item === (selectedValue as string);
+          return item === (activeValue as string);
         case 'TileColor':
+          const tileScheme = item as TileColorScheme;
+          const activeTileScheme = activeValue as TileColorScheme;
+
+          // Compare TileColorScheme objects by their content (e.g., gridColors and emptyColors)
           return (
-            (item as TileColorScheme) === (selectedValue as TileColorScheme)
+            tileScheme.gridColors === activeTileScheme.gridColors &&
+            tileScheme.emptyColors === activeTileScheme.emptyColors
           );
         default:
           throw new Error(`Unsupported color type: ${whichColor}`);
       }
     };
-  }, [whichColor, selectedValue]);
+  }, [whichColor, selectedValue, options]);
 
   return (
     <div className='flex space-x-4 mb-6'>
