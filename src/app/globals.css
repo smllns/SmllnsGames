@@ -6,6 +6,12 @@ body {
   font-family: var(--font-roboto), sans-serif;
 }
 
+/* src/globals.css */
+html,
+body {
+  touch-action: none;
+}
+
 @layer base {
   :root {
     --radius: 0.5rem;

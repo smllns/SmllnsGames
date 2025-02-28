@@ -200,6 +200,7 @@ const Game2048 = () => {
         className={`relative flex items-center justify-center w-[90vmin] h-[90vmin] max-w-[70vh] max-h-[70vh] p-4 rounded-lg`}
         style={{
           backgroundColor: selectedGridColor || '#2d3748',
+          touchAction: 'none',
         }}
         onClick={handleUserInteraction}
       >
